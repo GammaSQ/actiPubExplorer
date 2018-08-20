@@ -69,7 +69,7 @@ var objlink_domain={
   })
 }
 
-var link_domain=Object.assign(objlink_domain,{
+var link_domain={...objlink_domain,...{
   "type":{
     type:'string',
     pattern:[
@@ -99,9 +99,9 @@ var link_domain=Object.assign(objlink_domain,{
     type:'integer',
     minimum:0
   }
-})
+}}
 
-var obj_domain=Object.assign(objlink_domain,{
+var obj_domain={...objlink_domain,...{
   "type":{
     type:'string',
     required:true,
@@ -230,9 +230,9 @@ var obj_domain=Object.assign(objlink_domain,{
       }
     }
   },
-})
+}}
 
-var intrActivity_domain=Object.assign(obj_domain,{
+var intrActivity_domain={...obj_domain,...{
   "type":{
     type:'string',
     pattern:[
@@ -256,12 +256,12 @@ var intrActivity_domain=Object.assign(obj_domain,{
   "target":{
     '$ref':'/ObjLink'
   }
-})
+}}
 
 //actually, intraActvitiy is a subtype of activity.
 //however, it's easier to test for one added property,
 //than for the removal of thesame.
-var activity_domain=Object.assign(intrActivity_domain,{
+var activity_domain={...intrActivity_domain,...{
   "type":{
     type:'string',
     pattern:[
@@ -296,9 +296,9 @@ var activity_domain=Object.assign(intrActivity_domain,{
   "object":{
     '$ref':'/ObjLink'
   },
-})
+}}
 
-var collection_domain=Object.assign(obj_domain,{
+var collection_domain={...obj_domain,...{
   "type":{
     type:'string',
     pattern:[
@@ -327,9 +327,9 @@ var collection_domain=Object.assign(obj_domain,{
   "last":{
     '$ref':'/ColPageLink'
   }
-})
+}}
 
-var colPage_domain=Object.assign(collection_domain,{
+var colPage_domain={...collection_domain,...{
   "type":{
     type:'string',
     pattern:"CollectionPage"
@@ -347,9 +347,9 @@ var colPage_domain=Object.assign(collection_domain,{
       '$ref':'/Collection'
     }]
   }
-})
+}}
 
-var question_domain=Object.assign(intrActivity_domain,{
+var question_domain={...intrActivity_domain,...{
   "type":{
     type:'string',
     pattern:"Question"
@@ -370,9 +370,9 @@ var question_domain=Object.assign(intrActivity_domain,{
       '$ref':'/ObjLink'
     }]
   }
-})
+}}
 
-var relation_domain=Object.assign(obj_domain,{
+var relation_domain={...obj_domain,...{
   "type":{
     type:'string',
     pattern:"Relationship"
@@ -387,9 +387,9 @@ var relation_domain=Object.assign(obj_domain,{
   "object":{
     '$ref':'/ObjLink'
   }
-})
+}}
 
-var ordColPage_domain=Object.assign(colPage_domain,{
+var ordColPage_domain={...colPage_domain,...{
   "type":{
     type:'string',
     pattern:"OrderedCollectionPage"
@@ -398,9 +398,9 @@ var ordColPage_domain=Object.assign(colPage_domain,{
     type:'integer',
     minimum:0 
   },
-})
+}}
 
-var place_domain=Object.assign(obj_domain,{
+var place_domain={...obj_domain,...{
   "type":{
     type:'string',
     pattern:'Place'
@@ -428,9 +428,9 @@ var place_domain=Object.assign(obj_domain,{
     type:'string'
     //additional validation: applicable unit, or url
   }
-})
+}}
 
-var profile_domain=Object.assign(obj_domain,{
+var profile_domain={...obj_domain,...{
   "type":{
     type:'string',
     pattern:'Profile'
@@ -445,9 +445,9 @@ var profile_domain=Object.assign(obj_domain,{
       properties:obj_domain
     }]
   }
-})
+}}
 
-var tombstone_domain=Object.assign(obj_domain,{
+var tombstone_domain={...obj_domain,...{
   "type":{
     type:'string',
     pattern:'Tombstone'
@@ -468,7 +468,7 @@ var tombstone_domain=Object.assign(obj_domain,{
     type:'string',
     format:'date-time'
   }
-})
+}}
 
 var pureLink={
   'oneOf':[{
@@ -572,12 +572,12 @@ var pureImgLink={
   oneOf:[{
     type:'object',
     additionalProperties:false,
-    properties:Object.assign(obj_domain,{
+    properties:{...obj_domain,...{
       "type":{
         type:'string',
         pattern:"Image"
       }
-    })
+    }}
   },{
     type:'object',
     properties:link_domain
