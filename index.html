@@ -1,0 +1,74 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="main.js" type="text/javascript">
+  </script>
+  <style>
+  dd,dt,li{
+    vertical-align: top;
+  }
+  dl{
+    display:block;
+  }
+  dl::before{
+    content:'{';
+    display:inline-block;
+  }
+  dl::after{
+    content:'}';
+    display:block;
+  }
+  dd{
+    display:inline-block;
+    list-style:inside;
+    list-style-image: none;
+  }
+  dt{
+    padding-left:1rem;
+    display:inline-block;
+  }
+  dt::before{
+    content:':';
+    display:inline-block;
+  }
+  ol::before{
+    content:'[';
+    display:inline-block;
+  }
+  ol::after{
+    content:']';
+    display:block;
+  }
+  ol>li{
+    list-style-position: inside;
+  }
+  .error{
+    background-color:red;
+  }
+  </style>
+</head>
+<body>
+<header>
+  <h1>ActivityPub Validator</h1>
+  <p><em>BEWARE:</em></p>
+  <p>Early alpha stages. Might very well cause bogus validation!</p>
+  <p>Known errors:
+  <ul>
+    <li>doesn't enforce url-structure for href-elements
+    <li>doesn't enforce lang-format for language-maps
+  </ul>
+  <p>Validates <em>only</em> structure! Does <em>not</em> validate cross-dependencies!</p>
+  <p>Global valid/invalid generally trustworthy. Figuring something broke is easy.</p>
+  <p>Figuring out <em>what</em> broke is hard. Error pointers are less trustworthy.</p>
+  <p>This is implemented using <a href="https://github.com/tdegrunt/jsonschema">jsonschema</a>, big thanks and shoutout to it's developers!</p>
+  <p>Generally speaking, I assume the "type" sets the structure for the object, so don't fuck that one up!</p>
+</header>
+<form submit="javscript:grabJSON('textInput');">
+  <label for="textInput">type a url you want to test or full activity-pub-json!</label>
+  <textarea id="textInput"></textarea>
+  <input type="button" value="Test!" onclick="grabJSON('textInput');">
+</form>
+<main>
+</main>
+</body>
+</html>
