@@ -404,7 +404,7 @@ var ordColPage_domain={...colPage_domain,...{
 var place_domain={...obj_domain,...{
   "type":{
     type:'string',
-    pattern:'Place'
+    pattern:"Place"
   },
   "accuracy":{
     type:'number',
@@ -434,7 +434,7 @@ var place_domain={...obj_domain,...{
 var profile_domain={...obj_domain,...{
   "type":{
     type:'string',
-    pattern:'Profile'
+    pattern:"Profile"
   },
   "describes":{
     oneOf:[{
@@ -443,6 +443,7 @@ var profile_domain={...obj_domain,...{
       format:'url'
     },{
       type:'object',
+      //additionalProperties:false,
       properties:obj_domain
     }]
   }
@@ -451,7 +452,7 @@ var profile_domain={...obj_domain,...{
 var tombstone_domain={...obj_domain,...{
   "type":{
     type:'string',
-    pattern:'Tombstone'
+    pattern:"Tombstone"
   },
   //According to spec, "former Type" can be an object
   //But that makes no sense to me? I assume an error.
@@ -474,7 +475,7 @@ var tombstone_domain={...obj_domain,...{
 var pureLink={
   'oneOf':[{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:link_domain
   },
   {
@@ -496,11 +497,11 @@ var ColPageLink={
   id:'/ColPageLink',
   oneOf:[{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:ordColPage_domain
   },{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:colPage_domain
   },{
     type:'string',
@@ -512,46 +513,46 @@ var ColPageLink={
 var Collection={
   id:'/Collection',
   type:'object',
-  additionalProperties:false,
+  //additionalProperties:false,
   properties:collection_domain
 }
 
 var pureObjLink={
   oneOf:[{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:tombstone_domain
   },{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:activity_domain
   },{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:relation_domain
   },{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:intrActivity_domain
   },{
     '$ref':'/Collection'
   },{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:profile_domain
   },{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:place_domain
   },{
     '$ref':'/ColPageLink'
   },{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:obj_domain
   },{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:link_domain
   },{
     type:'string',
@@ -572,7 +573,7 @@ var ObjLink={
 var pureImgLink={
   oneOf:[{
     type:'object',
-    additionalProperties:false,
+    //additionalProperties:false,
     properties:{...obj_domain,...{
       "type":{
         type:'string',
@@ -581,6 +582,7 @@ var pureImgLink={
     }}
   },{
     type:'object',
+    //additionalProperties:false,
     properties:link_domain
   },{
     type:'string',
@@ -597,6 +599,63 @@ var ImgLink={
   },pureImgLink]
 }
 
+var alltypes=[
+  "Image",
+  "Profile",
+  "Tombstone",
+  "Place",
+  "CollectionPage",
+  "Question",
+  "Relationship",
+  "OrderedCollectionPage",
+  "Link",
+  "Mention",
+  "Object",
+  "Application",
+  "Group",
+  "Organization",
+  "Person",
+  "Service",
+  "Article",
+  "Document",
+  "Audio",
+  "Image",
+  "Video",
+  "Note",
+  "Page",
+  "Event",
+  "IntransitiveActivity",
+  "Arrive",
+  "Travel",
+  "Activity",
+  "Accept",
+  "TentativeAccept",
+  "Create",
+  "Delete",
+  "Follow",
+  "Ignore",
+  "Join",
+  "Leave",
+  "Like",
+  "Offer",
+  "Invite",
+  "Reject",
+  "TentativeReject",
+  "Remove",
+  "Undo",
+  "Update",
+  "View",
+  "listen",
+  "Read",
+  "Move",
+  "Announce",
+  "Block",
+  "Add",
+  "Flag",
+  "Dislike",
+  "Collection",
+  "OrderedCollection"
+].join('|');
 var Validator=require('jsonschema').Validator;
 var V = new Validator();
 
@@ -612,6 +671,7 @@ module.exports.validate=function (obj){
   var had_it=[];
   for (var err in valid.errors){
     var e=valid.errors[err]
+    var test=e.property.split('type')
     if (e.name=='required' && e.property){
       var particles=e.property.split('.');
       var sample=obj;
@@ -628,8 +688,13 @@ module.exports.validate=function (obj){
         continue
       }
     }
-    //                                                       EViL HACK TO FILTER OUT 'oneOf':[thing, {list of [thing]}]
-    if (e.name=='oneOf' || typeof(e.instance) == 'string' || (e.schema.items && e.schema.items.oneOf)){//e.name == 'oneOf' || (e.name=='type' && e.argument[0]=='string')){
+    if (e.name=='pattern' && test[test.length-1]==''){
+      if (-1<alltypes.indexOf(e.instance)){
+        continue
+      }
+    } else
+    //-->                                                   EViL HACK TO FILTER OUT 'oneOf':[thing, {list of [thing]}]
+    if (e.name=='oneOf' || typeof(e.instance) == 'string' || (e.schema.items && e.schema.items.oneOf)){
       continue
     }
     if(typeof(e.instance) == 'object' && e.schema.properties && e.schema.properties.type.type=='string' && 0>e.schema.properties.type.pattern.indexOf(e.instance.type)){
@@ -642,10 +707,6 @@ module.exports.validate=function (obj){
       continue
     }
     had_it.push(e.property)
-    var tp=e.property.split('.')
-    if(tp[tp.length-1]=='type'&&false){
-      continue
-    }
 
     var props=e.property.split('.');
     var last='instance';
@@ -662,7 +723,7 @@ module.exports.validate=function (obj){
       carry[prop]=carry[prop] || {};
       last=prop;
     }
-    carry[last]={FINAL_ERROR:e};
+    carry[last].FINAL_ERROR=e;
   }
 
   return valid
@@ -3707,7 +3768,7 @@ function isUrl(str){
   var pattern = new RegExp('^(https?:\/\/)?'+ // protocol
   '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|'+ // domain name
   '((\d{1,3}\.){3}\d{1,3}))'+ // OR ip (v4) address
-  '(\:\d+)?(\/[-a-z\d%_.~+]*)*.$','i');
+  '.','i');
   return pattern.test(str);
 }
 
@@ -3747,15 +3808,9 @@ window.grabJSON=grabJSON;
 function showValidity(str){
   var data=JSON.parse(str);
   var analysis=ActiPub.validate(data);
-  var isError=analysis.errors.length>0;
-  var myErrors={};
-  for (var key in analysis.SourceErrors){
-    var pre = key.split('.');
-    var call = pre.splice(0).split('[');
-    if (call.splice(0)[0] =! 'instance'){
-      mainError("Something went wrong while evaluating the JSON.");
-    }
-    myErrors[call.concat(pre)]=analysis.sourceErrors[key];
+  if(analysis.errors.length>0){
+    console.log(analysis);
+    mainError("Invalid ActiPubDocument. See below for details.")
   }
   showJSON(data, document.getElementsByTagName('main')[0], analysis.sourceErrors);
 }
@@ -3802,7 +3857,7 @@ function showJSON(data, root, errors){
         showJSON(datum, dt, errors[name]);
       } else {
         if(errors[name]){
-          datum=datum+"<em>error!</em>";
+          datum=datum+"<em class='error'>error!</em>";
           dt.onmousedown=function(){
             console.log(errors[name]);
           }
@@ -3830,7 +3885,7 @@ function showJSON(data, root, errors){
         showJSON(datum, li, errors[i]);
       } else {
         if (errors[i]){
-          datum=datum+"<em>error!</em>"
+          datum=datum+"<em class='error'>error!</em>"
           li.onmousedown=function(){
             console.log(errors[i]);
           }

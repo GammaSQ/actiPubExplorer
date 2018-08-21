@@ -6,7 +6,7 @@ function isUrl(str){
   var pattern = new RegExp('^(https?:\/\/)?'+ // protocol
   '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|'+ // domain name
   '((\d{1,3}\.){3}\d{1,3}))'+ // OR ip (v4) address
-  '(\:\d+)?(\/[-a-z\d%_.~+]*)*.$','i');
+  '.','i');
   return pattern.test(str);
 }
 
@@ -46,15 +46,9 @@ window.grabJSON=grabJSON;
 function showValidity(str){
   var data=JSON.parse(str);
   var analysis=ActiPub.validate(data);
-  var isError=analysis.errors.length>0;
-  var myErrors={};
-  for (var key in analysis.SourceErrors){
-    var pre = key.split('.');
-    var call = pre.splice(0).split('[');
-    if (call.splice(0)[0] =! 'instance'){
-      mainError("Something went wrong while evaluating the JSON.");
-    }
-    myErrors[call.concat(pre)]=analysis.sourceErrors[key];
+  if(analysis.errors.length>0){
+    console.log(analysis);
+    mainError("Invalid ActiPubDocument. See below for details.")
   }
   showJSON(data, document.getElementsByTagName('main')[0], analysis.sourceErrors);
 }
@@ -101,7 +95,7 @@ function showJSON(data, root, errors){
         showJSON(datum, dt, errors[name]);
       } else {
         if(errors[name]){
-          datum=datum+"<em>error!</em>";
+          datum=datum+"<em class='error'>error!</em>";
           dt.onmousedown=function(){
             console.log(errors[name]);
           }
@@ -129,7 +123,7 @@ function showJSON(data, root, errors){
         showJSON(datum, li, errors[i]);
       } else {
         if (errors[i]){
-          datum=datum+"<em>error!</em>"
+          datum=datum+"<em class='error'>error!</em>"
           li.onmousedown=function(){
             console.log(errors[i]);
           }
